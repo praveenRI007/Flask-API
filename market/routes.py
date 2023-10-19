@@ -121,7 +121,7 @@ def create_access_token(username: str,expires_delta: Optional[timedelta] = None)
     if expires_delta:
         expire = datetime.now(IST) + expires_delta
     else:
-        expire = datetime.now(IST) + timedelta(minutes=15)
+        expire = datetime.now(IST) + timedelta(minutes=1)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY_JWT, algorithm=ALGORITHM)
 
@@ -129,10 +129,19 @@ def create_access_token(username: str,expires_delta: Optional[timedelta] = None)
 def checkJWT():
     try:
         token = request.cookies.get('access_token')
+        if token == None and request.endpoint == 'login_page':
+            return None
+        if token == None and request.endpoint != 'login_page':
+            return redirect(url_for('login_page'))
         payload = jwt.decode(token, SECRET_KEY_JWT,algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
-        flash('token expired',category='info')
-        print('its expired')
+
+        # check refresh token expiry if not yet expired then use refresh token to generate new tokens
+
+
+        if request.endpoint == 'login_page':
+            return None
+        flash('Sorry ! token expired', category='info')
         if request.endpoint != 'login_page':
             return redirect(url_for('login_page'))
     return None
