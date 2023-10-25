@@ -22,7 +22,7 @@
       </div>
       <div class="modal-body">
         <form method="POST">
-          {{ selling_form.hidden_tag() }}
+          {{ selling_form.csrf_token }}
           <h4 class="text-center">
             Are you sure you want to sell {{ owned_item.name }} for {{ owned_item.price }}$ ?
           </h4>

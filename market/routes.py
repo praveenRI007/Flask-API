@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from flask_wtf.csrf import CSRFError
+
 from market import app
 from flask import render_template , redirect , url_for , flash , request , make_response
 from typing import Optional
@@ -147,6 +149,10 @@ def checkJWT():
     return None
 
 
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    flash(f"csrf token not found / mismatch", category='danger')
+    return redirect(request.url)#render_template('csrf_error.html', reason=e.description), 400
 
 @app.after_request
 def response_check(response):
