@@ -136,26 +136,26 @@ def create_access_token(username: str,expires_delta: Optional[timedelta] = None)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY_JWT, algorithm=ALGORITHM)
 
-# @app.before_request
-# def checkJWT():
-#     try:
-#         token = request.cookies.get('access_token')
-#         if token == None and request.endpoint == 'login_page':
-#             return None
-#         if token == None and request.endpoint != 'login_page':
-#             return redirect(url_for('login_page'))
-#         payload = jwt.decode(token, SECRET_KEY_JWT,algorithms=[ALGORITHM])
-#     except jwt.ExpiredSignatureError:
-#
-#         # check refresh token expiry if not yet expired then use refresh token to generate new tokens
-#
-#
-#         if request.endpoint == 'login_page':
-#             return None
-#         flash('Sorry ! token expired', category='info')
-#         if request.endpoint != 'login_page':
-#             return redirect(url_for('login_page'))
-#     return None
+@app.before_request
+def checkJWT():
+    try:
+        token = request.cookies.get('access_token')
+        if token == None and request.endpoint == 'login_page':
+            return None
+        if token == None and request.endpoint != 'login_page':
+            return redirect(url_for('login_page'))
+        payload = jwt.decode(token, SECRET_KEY_JWT,algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+
+        # check refresh token expiry if not yet expired then use refresh token to generate new tokens
+
+
+        if request.endpoint == 'login_page':
+            return None
+        flash('Sorry ! token expired', category='info')
+        if request.endpoint != 'login_page':
+            return redirect(url_for('login_page'))
+    return None
 
 
 @app.errorhandler(CSRFError)
